@@ -1,0 +1,29 @@
+---
+import NextPrevNav from "@/components/about-pages/next-prev-nav.astro";
+import Layout from "@/layouts/layout.astro";
+import MobileNav from "@/components/about-pages/mobile-nav";
+import { findPrevAndNextPages } from "@/lib/utils.ts";
+import NetworkDashboard from "@/components/about-pages/network-activity/dashboard.tsx";
+import { getDashboardData } from "@/components/about-pages/network-activity/useDashboardData";
+import { mockData } from "@/components/about-pages/network-activity/mockdata";
+import TopMargin from "@/components/ui/top-margin.astro";
+import OnThisPageSidebar from "@/components/on-this-page-sidebar.astro";
+import OnThisPageDropdown from "@/components/on-this-page-mobile";
+
+const pathname = new URL(Astro.request.url).pathname;
+export const nav: any = [
+  {
+    label: "Network Activity",
+    link: "/network-activity/",
+    enabled: true,
+  },
+];
+
+let initialData = await getDashboardData();
+---
+
+<Layout title="Network Activity">
+  <TopMargin>
+    <NetworkDashboard client:load initialData={initialData} />
+  </TopMargin>
+</Layout>

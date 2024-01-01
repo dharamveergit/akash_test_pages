@@ -1,0 +1,110 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { PaginateFunction } from "astro";
+import Layout from "@/layouts/layout.astro";
+import Tag from "@/components/ui/tag.astro";
+import Pagination from "@/components/pagination.astro";
+import PressCard from "@/components/brand-pages/press-card.astro";
+
+// Define the data structure for a project
+type Project = CollectionEntry<"Press_Page">;
+
+// Define a function to generate static paths
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  // Retrieve the collection of "press" and sort it by publication date
+  const projects = (await getCollection("Press_Page")).sort((a, b) => {
+    const dateA = new Date(a.data.pubDate);
+    const dateB = new Date(b.data.pubDate);
+
+    // Sort in descending order (latest date first)
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Initialize an array to store unique tags
+  const tags: string[] = [];
+
+  // Loop through each project
+  projects.forEach((project) => {
+    // Loop through the tags in each blog post
+    project.data.tags.forEach((tag: string) => {
+      // Capitalize the first letter of the tag
+      const lowerCasedTag = tag.toLowerCase();
+      // Check if the tag is not already in the allTags array
+      if (!tags.includes(lowerCasedTag)) {
+        // Add the tag to the allTags array
+        tags.push(lowerCasedTag);
+      }
+    });
+  });
+
+  // Generate paths for each tag
+  return tags.flatMap((tag) => {
+    const lowercasedTag = tag.toLowerCase();
+
+    // filter posts related to specified tag
+    const filteredPosts = projects.filter((post) =>
+      post.data.tags.some((tag: string) => tag.toLowerCase() === lowercasedTag),
+    );
+
+    return paginate(filteredPosts, {
+      params: { tag },
+      pageSize: 12,
+      props: { currentTag: tag, tags: tags },
+    });
+  });
+}
+
+// Destructure data from Astro.props
+const { page, currentTag, tags } = Astro.props;
+---
+
+<Layout title="Press" description="press">
+  <!-- Tags nav -->
+  <div class="container mt-14">
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      {
+        tags.map((tag: string) => {
+          return (
+            <Tag href={`/brand/press/${tag.toLowerCase()}/1`}>
+              {tag.charAt(0).toUpperCase() + tag.slice(1)}
+            </Tag>
+          );
+        })
+      }
+    </div>
+  </div>
+
+  <!-- Tag heading -->
+  <div class="container mt-20 space-y-10">
+    <h1 class="text-center text-4xl font-bold">
+      {currentTag.charAt(0).toUpperCase() + currentTag.slice(1)}
+    </h1>
+
+    <!-- Posts grid -->
+    <div
+      class="grid grid-cols-1 gap-x-16 gap-y-10 md:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        page.data.map((post: Project, i: number) => {
+          return (
+            <PressCard
+              title={post.data.title}
+              image={post.data.image}
+              externalLink={post.data.externalLink}
+              tag={post.data.tags[0]}
+              author={post.data.author}
+              pubDate={post.data.pubDate}
+              description={post.data.description}
+            />
+          );
+        })
+      }
+    </div>
+
+    <Pagination page={page} />
+  </div>
+</Layout>

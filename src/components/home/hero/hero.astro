@@ -1,0 +1,51 @@
+---
+import Button from "@/components/ui/button-link.astro";
+const { heroSection } = Astro.props;
+---
+
+<section class="container my-10">
+  <div class="border-paraDark border-b pb-[80px] pt-10 md:py-[120px]">
+    <!-- title  -->
+
+    <h1
+      class="mx-auto text-center text-3lg font-medium leading-[52px] md:text-6xl lg:text-7xl lg:leading-[93.6px]"
+      set:html={heroSection.title}
+    />
+
+    <!-- description -->
+    <p
+      class="mx-auto mt-[72px] max-w-[862px] text-center text-base leading-[24px] md:mt-6 md:text-xl md:leading-[28px]"
+    >
+      {heroSection.description}
+    </p>
+    <!-- buttons -->
+
+    <div class="mx-auto mt-12 flex w-fit flex-row gap-x-3 md:hidden">
+      <Button
+        link={heroSection.primaryButton.link}
+        variant="secondary"
+        size="lg"
+      >
+        {heroSection.primaryButton.label}
+      </Button>
+
+      <Button link={heroSection.secondaryButton.link} size="lg">
+        {heroSection.secondaryButton.label}
+      </Button>
+    </div>
+
+    <div class="mx-auto mt-8 hidden w-fit flex-row gap-x-5 md:flex">
+      <Button
+        link={heroSection.primaryButton.link}
+        variant="secondary"
+        size="xl"
+      >
+        {heroSection.primaryButton.label}
+      </Button>
+
+      <Button link={heroSection.secondaryButton.link} size="xl">
+        {heroSection.secondaryButton.label}
+      </Button>
+    </div>
+  </div>
+</section>
