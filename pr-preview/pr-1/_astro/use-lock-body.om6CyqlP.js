@@ -1,1 +1,0 @@
-import{r as e}from"./index.9AF9g4V4.js";function r(o){e.useEffect(()=>(o?document.body.style.overflow="hidden":document.body.style.overflow="auto",()=>{document.body.style.overflow="auto"}),[o])}export{r as u};
