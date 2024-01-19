@@ -1,0 +1,108 @@
+---
+import Layout from "@/layouts/layout.astro";
+import Pagination from "@/components/pagination.astro";
+import Tag from "@/components/ui/tag.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { PaginateFunction } from "astro";
+import PressCard from "@/components/brand-pages/press-card.astro";
+
+// Define a function to generate static paths
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  // Retrieve the collection of "press" and sort it by publication date
+  const projects = (await getCollection("Press_Page")).sort((a, b) => {
+    const dateA = new Date(a.data.pubDate);
+    const dateB = new Date(b.data.pubDate);
+
+    // Sort in decending order of date
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Initialize an array to store unique tags
+  const tags: string[] = [];
+
+  // Loop through each project
+  projects.forEach((project) => {
+    // Loop through the tags in each project
+    project.data.tags.forEach((tag: string) => {
+      // Capitalize the first letter of the tag and convert it to lowercase
+      const lowerCasedTag = tag.toLowerCase();
+
+      // Check if the tag is not already in the 'tags' array
+      if (!tags.includes(lowerCasedTag)) {
+        // Add the tag to the 'tags' array
+        tags.push(lowerCasedTag);
+      }
+    });
+  });
+
+  // Paginate the projects and pass the tags as props
+  return paginate(projects, {
+    props: { tags: tags },
+    pageSize: 9,
+  });
+}
+
+// Destructure data from Astro.props
+const { page, tags } = Astro.props;
+
+// Access the current URL from Astro.url
+const astroUrl = Astro.url;
+---
+
+<Layout title="Press">
+  <div class="container mt-10 space-y-4">
+    <h1
+      class="text-[24px] font-bold leading-[34px] md:text-3lg md:leading-[62.4px]"
+    >
+      Akash Press
+    </h1>
+    <p
+      class="max-w-[800px] text-sm leading-[20px] md:text-lg md:leading-[30px]"
+    >
+      Dive into Akash's Press and Brand for latest updates and authentic brand
+      experience
+    </p>
+  </div>
+
+  <div class="container">
+    <!-- <div class="space-x-4 overflow-x-auto py-10 md:flex">
+      {
+        tags
+          .sort(() => Math.random() - 0.5)
+          .map((tag: string) => (
+            <Tag href={`/brand/press/${tag.toLowerCase()}/1`}>
+              {tag.charAt(0).toUpperCase() + tag.slice(1)}
+            </Tag>
+          ))
+      }
+    </div> -->
+
+    <div class="mt-10">
+      <div
+        class="grid grid-cols-1 gap-x-16 gap-y-10 md:grid-cols-2 lg:grid-cols-3"
+      >
+        {
+          page.data.map((project, i: number) => {
+            return (
+              <PressCard
+                title={project.data.title}
+                image={project.data.image}
+                externalLink={project.data.externalLink}
+                tag={project.data.tags[0]}
+                author={project.data.author}
+                pubDate={project.data.pubDate}
+                description={project.data.description}
+              />
+            );
+          })
+        }
+      </div>
+
+      <Pagination page={page} />
+    </div>
+  </div>
+</Layout>
