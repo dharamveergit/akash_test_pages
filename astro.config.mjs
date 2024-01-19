@@ -46,4 +46,5 @@ export default defineConfig({
     mdx(),
   ],
   site: "https://akash.network",
+  base: '/akash_test_pages',
 });
