@@ -1,0 +1,3 @@
+[submodule "src/content/Docs"]
+	path = src/content/Docs
+	url = https://github.com/dharamveergit/docs.git
