@@ -45,6 +45,6 @@ export default defineConfig({
     }),
     mdx(),
   ],
-  site: "https://akash.network",
+  site: "https://dharamveergit.github.io",
   base: '/akash_test_pages',
 });
